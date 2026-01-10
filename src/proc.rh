@@ -1,0 +1,8 @@
+/* proc.rh - Ring Proc Constants */
+
+/* Process Options */
+PROC_COMBINED_STDOUT_STDERR = get_proc_option_combined_stdout_stderr()
+PROC_INHERIT_ENVIRONMENT    = get_proc_option_inherit_environment()
+PROC_ENABLE_ASYNC           = get_proc_option_enable_async()
+PROC_NO_WINDOW              = get_proc_option_no_window()
+PROC_SEARCH_USER_PATH       = get_proc_option_search_user_path()
