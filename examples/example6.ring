@@ -105,7 +105,7 @@ func main
 	? ""
 
 	if isWindows()
-		proc = proc_create(["cmd", "/c", "set /p x= & echo You said: %x%"],
+		proc = proc_create(["findstr", ".*"],
 			PROC_ENABLE_ASYNC | PROC_SEARCH_USER_PATH)
 	else
 		proc = proc_create(["sh", "-c", `read x && echo "You said: $x"`],

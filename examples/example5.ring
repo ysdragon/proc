@@ -30,10 +30,11 @@ func main
 	? ""
 
 	? "2. Running Python code:"
-	result = proc_run(["python3", "--version"], PROC_SEARCH_USER_PATH)
-	if result[1] != 0
+	try 
+		result = proc_run(["python3", "--version"], PROC_SEARCH_USER_PATH)
+	catch
 		result = proc_run(["python", "--version"], PROC_SEARCH_USER_PATH)
-	ok
+	done
 
 	if result[1] = 0
 		? "   " + trim(result[2])
@@ -52,18 +53,16 @@ func main
 
 	? "3. System information:"
 	if isWindows()
-		result = proc_shell("hostname")
+		result = proc_run(["hostname"], PROC_SEARCH_USER_PATH)
+		? "   Hostname: " + trim(result[2])
+		result = proc_run(["whoami"], PROC_SEARCH_USER_PATH)
+		? "   User: " + trim(result[2])
 	else
 		result = proc_shell("hostname")
-	ok
-	? "   Hostname: " + trim(result[2])
-
-	if isWindows()
-		result = proc_shell("echo %USERNAME%")
-	else
+		? "   Hostname: " + trim(result[2])
 		result = proc_shell("whoami")
+		? "   User: " + trim(result[2])
 	ok
-	? "   User: " + trim(result[2])
 	? ""
 
 	? "4. Parallel process execution:"
@@ -93,39 +92,34 @@ func main
 	? "5. Command pipeline simulation:"
 	? "   Simulating: generate numbers | filter even | square"
 
-	// Step 1: Generate numbers 1-10
 	if isWindows()
-		proc1 = proc_create(["cmd", "/c", "for /L %i in (1,1,10) do @echo %i"], PROC_SEARCH_USER_PATH)
+		cPyCmd = "print(' '.join(str(x*x) for x in range(2,11,2)))"
+		result = proc_run(["python", "-c", cPyCmd], PROC_SEARCH_USER_PATH)
+		aResults = str2list(substr(result[2], " ", nl))
 	else
+		// Step 1: Generate numbers 1-10
 		proc1 = proc_create(["sh", "-c", "seq 1 10"], PROC_SEARCH_USER_PATH)
-	ok
-	proc_join(proc1)
-	cData = proc_stdout(proc1)
-	proc_destroy(proc1)
+		proc_join(proc1)
+		cData = proc_stdout(proc1)
+		proc_destroy(proc1)
 
-	// Step 2: Filter even numbers (using grep/findstr)
-	if isWindows()
-		proc2 = proc_create(["findstr", "[02468]$"], PROC_SEARCH_USER_PATH)
-	else
+		// Step 2: Filter even numbers
 		proc2 = proc_create(["grep", "-E", "[02468]$"], PROC_SEARCH_USER_PATH)
-	ok
-	proc_write(proc2, cData)
-	proc_close_stdin(proc2)
-	proc_join(proc2)
-	cFiltered = proc_stdout(proc2)
-	proc_destroy(proc2)
+		proc_write(proc2, cData)
+		proc_close_stdin(proc2)
+		proc_join(proc2)
+		cFiltered = proc_stdout(proc2)
+		proc_destroy(proc2)
 
-	// Step 3: Square each number using awk/powershell
-	if isWindows()
-		proc3 = proc_create(["powershell", "-Command", "$input | ForEach-Object { $n = [int]$_; $n * $n }"], PROC_SEARCH_USER_PATH)
-	else
+		// Step 3: Square each number
 		proc3 = proc_create(["awk", "{print $1 * $1}"], PROC_SEARCH_USER_PATH)
+		proc_write(proc3, cFiltered)
+		proc_close_stdin(proc3)
+		proc_join(proc3)
+		aResults = str2list(proc_stdout(proc3))
+		proc_destroy(proc3)
 	ok
-	proc_write(proc3, cFiltered)
-	proc_close_stdin(proc3)
-	proc_join(proc3)
 
-	aResults = str2list(proc_stdout(proc3))
 	cResults = ""
 	for line in aResults
 		if len(trim(line)) > 0
@@ -135,7 +129,6 @@ func main
 			cResults += trim(line)
 		ok
 	next
-	proc_destroy(proc3)
 
 	? "   Input: 1-10"
 	? "   Filter: even numbers (2,4,6,8,10)"
