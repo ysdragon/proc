@@ -65,8 +65,7 @@ aPackageInfo = [
 		"lib/macos/arm64/libring_proc.dylib"
 	],
 	:freebsdfiles = 	[
-		"lib/freebsd/amd64/libring_proc.so",
-		"lib/freebsd/arm64/libring_proc.so"
+		"lib/freebsd/amd64/libring_proc.so"
 	],
 	:windowsringfolderfiles = 	[
 
