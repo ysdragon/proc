@@ -98,7 +98,7 @@ if(NOT EXISTS "${SUBPROCESS_DIR}/subprocess.h")
     FetchContent_Declare(
         subprocess
         GIT_REPOSITORY https://github.com/sheredom/subprocess.h.git
-        GIT_TAG        master
+        GIT_TAG        main
         SOURCE_DIR     "${SUBPROCESS_DIR}"
     )
     FetchContent_MakeAvailable(subprocess)
