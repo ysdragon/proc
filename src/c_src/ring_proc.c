@@ -216,7 +216,7 @@ RING_FUNC(ring_proc_create_ex)
 
 	/* Create the subprocess */
 	int result =
-		subprocess_create_ex((const char *const *)commandLine, nOptions, (const char *const *)environment, proc);
+		subprocess_create_ex((const char *const *)commandLine, nOptions, (const char *const *)environment, NULL, proc);
 
 	/* Free arrays */
 	ring_state_free(pVM->pRingState, commandLine);
